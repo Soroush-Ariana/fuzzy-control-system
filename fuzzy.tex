@@ -1,0 +1,249 @@
+\documentclass[12pt]{article}
+\usepackage{minted} 
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip}
+    \usepackage{fontspec}
+    \usepackage{cite}
+    \usepackage{ amssymb }
+    \usepackage{graphicx}
+    \usepackage{caption}
+    \usepackage[Export]{adjustbox}
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+    \usepackage{float}
+    \floatplacement{figure}{H}
+    \usepackage{xcolor} 
+    \usepackage{enumerate}
+    \usepackage[margin=0.3in]{geometry}
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \makeatletter % fix for grffile with XeLaTeX
+    \makeatother
+    \usepackage{hyperref}
+    \usepackage{titling}
+    \usepackage{longtable}
+    \usepackage{booktabs}
+    \usepackage[inline]{enumitem}
+    \usepackage[normalem]{ulem} 
+    \usepackage{mathrsfs}
+    \definecolor{citecolor}{HTML}{40B289}
+    \definecolor{urlcolor}{HTML}{16A2F3}
+    
+    \definecolor{pagebg}{HTML}{002134}
+    \definecolor{linkcolor}{HTML}{16A2F3}
+    \sloppy 
+    \hypersetup{
+      breaklinks=true,
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    \usepackage{breqn}
+
+    \usepackage{algorithm}
+    \usepackage{algorithmic}
+    \usepackage{relsize}
+    \usepackage{xepersian} 
+    % \pagecolor{pagebg}
+    % \color{white}
+    \renewcommand{\figurename}{تصویر}
+    \settextfont{XB Niloofar}
+    \setmonofont{Cascadia Code}
+    \linespread{1.35}
+    \title{پیاده سازی یک سیستم فازی\\به منظور کنترل یک مساله با ورودیهای زبانی}
+    \author{
+            \textbf{سروش آریانا - 9713034}
+            \\
+            دکتر مهدی قطعی
+        }
+\date{\today}
+\begin{document}
+\maketitle
+\begin{abstract}
+    در حالی که همگان از قدرت ماشین ها در انجام محاسبات پیچیده مطلع هستند، پیچیدگی ذهن انسان اما هنوز در مقایسه با آن در
+    هاله ای از ابهام قرار دارد. تحلیل بسیاری از امور پیش پا افتاده که برای انسان ها بسیار ساده است گاه میتواند
+    برای ماشین ها بسیار چالش برانگیز باشد.از این رو دانشمندان حوزه علوم رایانه همواره در تلاش بوده اند که پدیده
+    ها را نزدیک به ادراک انسان و در عین حال به شیوه ای قابل
+    درک برای ماشین ها مدل سازی کنند.\\ \indent{}
+    ظهور متودولوژی های فازی را میتوان یکی از این تلاش ها به حساب آورد. الگوریتم های فازی همان چیزی هستند که
+    میتوانند ادراک ماشین ها را از دامنه صفر و یک ، به بازه ای از اعداد صفر تا یک گسترش دهند تا
+    استدلال های غیر قطعی در تصمیمات را برای رایانه ها مدل سازی کنند تا تفکر آن ها را یک گام دیگر به
+    پیچیدگی ذهن انسان نزدیک کند.
+    \\حال ما در اینجا سعی داریم تا ضمن توصیف سیستم های کنترل فازی، مثالی برای نحوه کارکرد چنین سیستمی ارائه دهیم.
+\end{abstract}
+\clearpage
+\section{معرفی سیستم فازی}
+\begin{figure}[H]
+    \centering
+    \begin{center}
+        \adjustimage{max size={0.6\linewidth}{\paperheight}}{fuzzy_system.png}
+    \end{center}
+    \caption{سیکل حل مسئله با روش فازی در کنترلر فازی}
+\end{figure}
+\subsection{مراحل طراحی}
+
+\paragraph{}
+ابتدا باید بیان کلی از مسئله داشته باشیم، از این رو قصد داریم مراحلی که در ادامه به پیاده سازی آن ها میپردازیم را دوره کنیم.
+
+
+\begin{enumerate}
+    \item {
+          \textbf{معرفی ورودی ها و خروجی های مسسئله}
+          در آغاز کار به معرفی متغیر های وردی مسئله میپردازیم و مقادیر ممکن برای آن را بیان می کنیم.
+          }
+    \item {
+          \textbf{فازی کردن متغیر های ورودی}
+          در ادامه لازم است که بر روی دامنه متغیر های خود چند حالت گسسته را در نظر بگیریم و برای انها یک ضریب فازی موجودیت تعریف کنیم. برای اینکار از توابع عضویت اسستفاده میکنیم. این توابع میتواند با توجه به تعریف ما مثلثی یا ذوذنقه ای و یا هر شکل دیگری باشد.
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{des.png}
+              \end{center}
+              \caption{نمونه ای از روش فازی کردن و گسسته سازی مقادیر ورودی. دامنه این نمودار ها دامنه متغیر ما را بیان میکند و برد بیانگر مقدار تابع عضویت است. هر رنگ بیانگر مقادیر عضویت در یک دسته است.}
+          \end{figure}
+    \item {
+          \textbf{تعریف قوانین ارجاع و پایگاه دانش}
+          سپس باید تعریف کنیم که چه قوانین استدلالی در مدل ما موجود است. قوانین ارجاعی مجموعه گزاره هایی به شکل "اگر \dots  آنگاه " هستند که ما از ان ها برای رسیدن به نتایج جدید استفاده میکنیم. سیاست هایی که میتوانیم برای بدست اورد مقادیر خروجی توسط قوانین ارجاع استفاده کنیم میتواند روش ممدانی یا لارسن باشد. دقت کنید که قوانین ارجاع و پایگاه دانش ما باید کامل باشد. یعنی هیچ مقدار ورودی ای در دامنه ممکن نباشد که به ازای آن در مسئله گیر کنیم و نتوانیم پیشروی کنیم.
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{ex.png}
+              \end{center}
+              \caption{روش های ممدانی و لارسن در ارجاع.}
+          \end{figure}
+    \item {
+          \textbf{غیر فازی کردن مقادیر خروجی}
+          در ادامه میتوانیم بیان فازی متغیر های خروجی را با کمک روش هایی همچون "ماکزیمم میانگین ها" و "مرکز مساحت" و "نیمساز مساحت"  به بیان عددی آن ها بازگردانیم.این روش ها به طور مفصل در جزوه توضیح داده شده اند.
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{xoz.png}
+              \end{center}
+              \caption{استفاده از روش مرکز ثقل در غیر فازی سازی}
+          \end{figure}
+\end{enumerate}
+\clearpage
+
+\section{مثال حل شده برای یک کنترل گر فازی}
+\subsection{توصیف مسئاله}
+
+\paragraph{}
+مسابقات علمی در رشته های ترکیبی در سطح دبیرستان ها در آستانه برگزاری است، مدیر مدرسه دبیرستان شهید ممدانی باید بتواند از بین 50 شاگرد ممتاز مدرسه افراد مناسب برای شرکت در هر رشته را انتخاب کند. هر کدام از رشته ها نیاز به دانش ترکیبی افراد در زمینه های مختلف ریاضی فیزیک و شیمی را دارد. همچنین محدودیتی برای ارسال دانش آموزان به هر رشته وجود دارد به طوری که از بین افراد مناسب برای هر رشته تنها 3 نفر از آن ها که بیشترین امتیاز را آورده اند انتخاب میشوند.
+
+\paragraph{}
+نمرات تمام دانش آموزان در سه درس شیمی فیزیک و ریاضی در اختیار مدیر قرار گرفته است و وی میخواهد با توجه به معدل نمرات گذشته افراد در هر درس آنها را قضاوت کرده و برای شرکت در رشته های متناسب با توانایی هایشان برگزیند و ما نیز قصد داریم با طراحی یک سیستم کنترل فازی به او کمک کنیم.
+
+
+\subsection{متغیر های ورودی(\lr{Antecednets})}
+\paragraph{}
+تمام متغیر های زیر اعدادی اعشاری در بازه 0 تا 20 و با دقت 0.25 هستند.
+مجموعه های فازی آن ها نیز شامل 3 دسته خوب، متوسط و بد می شود.
+\begin{enumerate}
+    \item {
+          \textbf{معدل نمرات درس ریاضی}
+          }
+    \item {
+          \textbf{معدل نمرات درس فیزیک}
+          }
+    \item {
+          \textbf{معدل نمرات درس شیمی}
+          }
+
+\end{enumerate}
+
+
+\subsection{متغیر های خروجی(\lr{Consequents})}
+\paragraph{}
+تمام متغیر های زیر اعدادی اعشاری در بازه 0 تا 100 و با دقت 1 هستند.
+مجموعه های فازی آن ها نیز شامل 3 دسته خوب، متوسط و بد می شود.
+
+\begin{enumerate}
+    \item {
+          \textbf{سطح توانایی دانشجو برای شرکت در مسابقات علوم کامپیوتر}
+          }
+    \item {
+          \textbf{سطح توانایی دانشجو برای شرکت در مسابقات سازه مستحکم}
+          }
+    \item {
+          \textbf{سطح توانایی دانشجو برای شرکت در مسابقات خودرو سازی}
+          }
+\end{enumerate}
+\paragraph{}
+در نهایت در هر رشته سه نفر از آنهایی که بیشترین امتیاز را آورده اند برگزیده میشوند.
+\subsection{پیاده سازی}
+\paragraph{}
+برای پیاده سازی این روش در کامپیوتر از زبان پایتون و کتابخانه \lr{scikit-fuzzy} استفاده شده است.همچنین به عنوان محیط پیاده سازی از محیط \lr{Google Colab} استفاده شده است.
+\begin{enumerate}
+    \item {
+          \textbf{نصب و \lr{Import} لایبرری های مورد نیاز به محیط کولب}
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{1.png}
+              \end{center}
+              \caption{}
+          \end{figure}
+    \item {
+          \textbf{تعریف متغیر های ورودی و خروجی و بازه تعریف آن ها}
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{2.png}
+              \end{center}
+              \caption{}
+          \end{figure}
+    \item {
+          \textbf{تبدیل دامنه متغیر ها به توابع عضویت بر روی متغیر های فازی}
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{3.png}
+              \end{center}
+              \caption{شمای کلی  توابع عضویت متغیر های فازی که به صورت مثلثی استاندارد تعریف شده اند.}
+          \end{figure}
+    \item {
+          \textbf{تعریف قوانین ارجاع و پایگاه دانش و ساخت سیستم کنترلر}
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{4_a.png}
+              \end{center}
+              \caption{}
+          \end{figure}
+    \item {
+          \textbf{مشاهده شمای کلی از درخت ارجاع متغیر های خروجی از ورودی}
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{4_b.png}
+              \end{center}
+              \caption{}
+          \end{figure}
+
+    \item {
+          \textbf{وارد کردن یک مثال به عنوان ورودی و بررسی خروجی ها}
+          }
+          \begin{figure}[H]
+              \centering
+              \begin{center}
+                  \adjustimage{max size={0.9\linewidth}{\paperheight}}{5.png}
+              \end{center}
+              \caption{}
+          \end{figure}
+\end{enumerate}
+
+\section{منابع}
+\paragraph{}
+منابع در فایل \lr{Source.txt} موجود است.
+\end{document}
